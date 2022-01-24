@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF converter</title>
+    <link rel="stylesheet" href={{url_for('static', filename="css/main.css")}}>
+    <script src={{url_for('static', filename="js/main.js")}}></script>
+    <!--
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    -->
+</head>
+<body>
+    <div class="offset-5"></div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class=flashes id='hideMe'>{{message}}</div>
+                {% endfor %}
+                <script src={{url_for('static', filename="js/changeurl.js")}}></script>
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div style="top:30px; height: 10px; position: relative;"></div>
+    <div class="with_border_header"><a href="/" style="color: #07784e">ML testing:</a></div>
+    <div class="with_border">
+        <div class="block_title">Upload file:</div>
+        <form action = "http://localhost:5000/uploader" method = "POST" enctype = "multipart/form-data">
+            <input type = "file" name = "file" />
+            <input type = "submit"/>
+        </form> 
+    </div>
+    {% if web_data %}
+        <div class="with_border">
+            <div class="block_title">File List:</div>
+            <table style="width:100%">
+                <thead>
+                    <th>FileName</th>
+                    <th>Convert</th>
+                    <th>Delete</th>
+                </thead>
+                <tbody>
+            {% for file in dict(web_data) %}
+                <tr>
+                    <td>
+                        <div style="margin: 5px 0;"><a href="/convert/{{file}}">{{file}}</a></div>
+                    </td>
+                    <td style=" text-align: center;">
+                        <a href="/convert/{{file}}" onclick="showWaitCursor();" style="color:#aa0420; padding:0 10px;">+</a>
+                    </td>
+                    <td style=" text-align: center;">
+                        <a href="/delete/{{file}}" style="color:#aa0420; padding:0 10px;">X</a>
+                    </td>
+                </tr>
+            {% endfor%}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    {% if total %}
+        <div class="with_border" style="display:flex;">
+            <div class="block_title">PDF pages:</div>
+            {% with indexpage = page %}
+                {% for page2 in range(1, total) %}
+                    {% if indexpage|int != page2 %}
+                        <div class="with_border" style="margin: 0 3px; background-color: #5aaa8d;"><a href="/{{page2}}" style="color:#aa0420; padding:0 10px;">{{page2}}</a></div>
+                    {% endif %}
+                    {% if indexpage|int == page2 %}
+                        <div class="with_border" style="margin: 0 3px; background-color: #257a5b;"><a href="/{{page2}}" style="color:white; padding:0 10px;">{{page2}}</a></div>
+                    {% endif %}
+                {% endfor%}
+            {% endwith %}    
+        </div>
+    {% endif %}
+    {% if temp %}
+        <div class="with_border">
+            <div class="block_title">PDF preview:</div>
+            <div  style="display:flex;">
+                {% for file in dict(temp) %}
+                    <div>
+                        <a href="/recognize/{{file}}" onclick="showWaitCursor();" style="color:#aa0420; padding:0 10px;">
+                            <img style="margin: 0 3px;" src="{{url_for('temp',filename = file)}}" alt="{{file}}" width="60" height="80">
+                        </a>
+                    </div>
+                {% endfor%}
+            </div>
+        </div>
+    {% endif %}
+    <div>
+        <select name=lang method="POST" action="/" >
+            <option value= "eng" SELECTED>ENGLISH</option>"
+            <option value= "deu" SELECTED>UKRAINIAN</option>"
+            <option value= "deu" SELECTED>GERMAN</option>"
+        </select>
+    </div>
+    {% if html_data %}
+  
+    {% endif %}
+    {% if html_data %}
+        <div class="with_border">
+        <div class="block_title">Recognized file:</div>
+        {% for words in dict(html_data) %}
+            <div>{{words}}</div>
+        {% endfor%}
+        </div>
+        <img style="margin: 0 3px;" src="{{url_for('temp',filename = file)}}" alt="{{file}}" width="600" height="800">
+    {% endif %}    
+    {% if pagination %}
+        {{ pagination.links }}
+    {% endif %}
+</body> 
+</html>
